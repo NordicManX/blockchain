@@ -42,14 +42,21 @@ my_blockchain = Blockchain()
 
 purchase1 = {
     'item': 'Ford Mustang',
-    'value': 100000,
+    'value': 100.000,
     'buyer': 'nelson@gmail.com',
     'seller': '@cazuza'
 }
 
 purchase2 = {
     'item': 'Ferrari',
-    'value': 1000000,
+    'value': 600.000,
+    'buyer': 'vendas@ouel.com',
+    'seller': '@camarão'
+}
+
+purchase3 = {
+    'item': 'camaro',
+    'value': 80.000,
     'buyer': 'vendas@ouel.com',
     'seller': '@camarão'
 }
@@ -63,7 +70,8 @@ doc = {
 
 my_blockchain.add_block(Block(1, date.datetime.now(), purchase1, my_blockchain.chain[-1].hash))
 my_blockchain.add_block(Block(2, date.datetime.now(), purchase2, my_blockchain.chain[-1].hash))
-my_blockchain.add_block(Block(3, date.datetime.now(), doc, my_blockchain.chain[-1].hash))
+my_blockchain.add_block(Block(3, date.datetime.now(), purchase3, my_blockchain.chain[-1].hash))
+my_blockchain.add_block(Block(4, date.datetime.now(), doc, my_blockchain.chain[-1].hash))
 
 
 print(f'Blockchain is valid? {my_blockchain.is_valid()}')
