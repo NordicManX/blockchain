@@ -1,6 +1,6 @@
 import hashlib
 import datetime as date
-
+from flask import Flask, jsonify, request
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
         self.index = index
@@ -37,57 +37,44 @@ class Blockchain:
                 return False
 
         return True
+class Cryptocurrency:
+    def __init__(self) -> None:
+        self.blockchain = Blockchain()
+     
+    def mine_block(self):
+        new_block = Block(len(self.blockchain.chain), date.datetime.now(), 'Maya_Coin', '')  
+        self.blockchain.add_block(new_block)
 
-my_blockchain = Blockchain()
+    def get_full_chain(self):
+        chain_data = []
+        for block in self.blockchain.chain:
+            block_data = {
+                'index': block.index,
+                'timestamp': str(block.timestamp),
+                'data': block.data,
+                'previous_hash': block.previous_hash,
+                'hash': block.hash
+            }
 
-purchase1 = {
-    'item': 'Ford Mustang',
-    'value': 100.000,
-    'buyer': 'nelson@gmail.com',
-    'seller': '@cazuza'
-}
+            chain_data.append(block_data)
+            return jsonify({'chain': chain_data})
 
-purchase2 = {
-    'item': 'Ferrari',
-    'value': 600.000,
-    'buyer': 'vendas@ouel.com',
-    'seller': '@camarão'
-}
+        app = Flask(__name__)
+        Cryptocurrency = Cryptocurrency()
 
-purchase3 = {
-    'item': 'camaro',
-    'value': 80.000,
-    'buyer': 'vendas@ouel.com',
-    'seller': '@camarão'
-}
+        @app.route('/mine_block', methods=['GET'])
+        def mine_block():
+            Cryptocurrency.mine_block()
+            return 'Block mined successfully!'
 
-doc = {
-    'item': 'DOC. test document',
-    'valuePaidToTheResource': 100,
-    'buyer': 'pati@liça.com',
-    'seller': '@cartorio'
-}
+        @app.route('/get_chain', methods=['GET'])
+        def get_chain():
+            return Cryptocurrency.get_full_chain()
 
-my_blockchain.add_block(Block(1, date.datetime.now(), purchase1, my_blockchain.chain[-1].hash))
-my_blockchain.add_block(Block(2, date.datetime.now(), purchase2, my_blockchain.chain[-1].hash))
-my_blockchain.add_block(Block(3, date.datetime.now(), purchase3, my_blockchain.chain[-1].hash))
-my_blockchain.add_block(Block(4, date.datetime.now(), doc, my_blockchain.chain[-1].hash))
+        @app.route('/get_balance', methods=['POST'])
+        def get_balance():
+            address = request.get_json(['address'])
+            return Cryptocurrency.get_balance(address)
 
-
-print(f'Blockchain is valid? {my_blockchain.is_valid()}')
-
-
-def print_blockchain(chain):
-
-    print(30*'-----')
-
-    for block in chain:
-        
-        print(f'Block: {block.index}')
-        print(f'Timestamp: {block.timestamp}')
-        print(f'Dados Salvos: {block.data}')
-        print(f'Hash: {block.hash}')
-        print(f'Previous Hash: {block.previous_hash}')
-        print(30*'-----')
-
-print(print_blockchain(my_blockchain.chain))
+        if __name__ == '__main__':
+            app.run(port=5000)
